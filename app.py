@@ -53,11 +53,7 @@ app_ui = ui.page_fluid(
                 selected="0.95",
             ),
             ui.tags.div(
-            ui.input_file("file1", ui.div("Choose a file to upload", ui.tooltip(bs_info_icon("format of csv file to upload"), 
-            f'''CSV file with two columns for revenue (Control Revenue and Variation Revenue), where each row
-              represents one user/clientId and their revenue, which can be 0 if there was no purchase. 
-              The delimiter must be a comma and if there is decimal numbers, the decimal separator must be a period.'''),),
-              multiple=False, accept="text/csv"),
+            ui.input_file("file1", ui.div("Choose a file to upload", ui.output_ui("info_icon_html"), multiple=False, accept="text/csv")),
             ui.download_button("download", "Download sample csv")),
             ui.input_action_button("compute", "Calculate", class_="btn-primary")
         ),
@@ -68,19 +64,6 @@ app_ui = ui.page_fluid(
         ),
     ),
 )
-
-"""
-Generates an HTML the info icon.
-"""
-def bs_info_icon(title: str):
-    return ui.HTML(f'''
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="bi bi-info-circle"
-             style="height:1em;width:1em;fill:currentColor;" aria-hidden="true" role="img">
-          <title>{title}</title>
-          <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
-          <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
-        </svg>
-    ''')
 
 def server(input, output, session):
     """
@@ -153,7 +136,28 @@ def server(input, output, session):
         f = open(file_path, "r")
         yield f.read()
         f.close()
+    
+
+    @output
+    @render.ui
+    def info_icon_html():
+        """
+        Generates an HTML of the info icon situated  next to the upload file input.
+        """
+        info_icon_info = f'''CSV file with two columns for revenue (Control Revenue and Variation Revenue), where each row
+              represents one user/clientId and their revenue, which can be 0 if there was no purchase. 
+              The delimiter must be a comma and if there is decimal numbers, the decimal separator must be a period.'''
         
+        info_icon_svg = ui.HTML(f'''
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" class="bi bi-info-circle"
+                style="height:1em;width:1em;fill:currentColor;" aria-hidden="true" role="img">
+              <title>Format of csv file to upload</title>
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"></path>
+              <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"></path>
+            </svg>
+        ''')
+        return ui.tooltip(info_icon_svg, info_icon_info)
+
     @output
     @render.ui
     @reactive.event(input.compute)

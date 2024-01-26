@@ -16,6 +16,10 @@ label.input-group-btn.input-group-prepend {
     margin-top: 0;
 }
 
+div#info_icon_html {
+    display: inline;
+}
+
 svg.bi.bi-info-circle {
     margin-left: 4px;
     margin-bottom: 1px;
